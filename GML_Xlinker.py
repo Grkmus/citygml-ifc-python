@@ -1,6 +1,7 @@
 import os
 import xml.etree.ElementTree as et
 
+
 """This program coded for establish xlink mechanism on FME exported GML files."""
 
 base_path = os.path.dirname(os.path.realpath(__file__))
@@ -39,11 +40,14 @@ for key, value in ns.iteritems():
 for cityObjectMember in root.findall('core:cityObjectMember', ns):
     buildings = cityObjectMember.findall('bldg:Building', ns)
     for building in buildings:
+        for element in building:
+            if 'Solid' in element.tag:
+                lod_level = element.tag
+                break
         boundedBy = building.findall('bldg:boundedBy', ns)
         id_list = []
-        #selecting all surface member defined in building tag --- !!!CHANGE THE LOD LEVEL IF IT IS DEFFERENT!!!
-        surfaceMembers = building.findall(
-            ".//{http://www.opengis.net/citygml/building/1.0}lod3Solid//{http://www.opengis.net/gml}surfaceMember")
+        #selecting all surface member defined in building tag 
+        surfaceMembers = building.findall(".//%s//{http://www.opengis.net/gml}surfaceMember" % lod_level)
         #getting surface gml_id and adding it to polygon
         for element in boundedBy:
             surface = element[0]
